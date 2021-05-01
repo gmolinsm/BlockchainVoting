@@ -3,12 +3,11 @@ pragma solidity 0.8.4;
 
 contract Election {
     
-    address public owner;
+    address public owner = msg.sender;
     string public election_name;
     uint public total_votes;
     
     constructor() {
-        owner = msg.sender;
         election_name = "Elecciones 4M";
         add_candidate("Isabel Diaz Ayuso, PP");
         add_candidate("Angel Gabilondo Pujol, PSOE");
@@ -50,7 +49,8 @@ contract Election {
         return candidates.length;
     }
     
-    function authorize(address _person) owner_only public {
+    function authorize(address _person) public {
+        require(!voters[msg.sender].authorized);
         voters[_person].authorized = true;
     }
     

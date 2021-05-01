@@ -1,11 +1,11 @@
 var Election = artifacts.require("./Election.sol");
 
 contract("Election", function(accounts) {
-    it("initializes with two candidates", function(){
+    it("initializes with five candidates", function(){
         return Election.deployed().then(function(instance) {
             return instance.get_num_candidates();
         }).then(function(count) {
-            assert.equal(count, 2);
+            assert.equal(count, 5);
         });
     });
 

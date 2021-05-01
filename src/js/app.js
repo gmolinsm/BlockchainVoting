@@ -3,20 +3,19 @@ App = {
   contracts: {},
   account: '0x0',
   accountStatus: "Unknown",
-  accountBalance: 0,
+  owner: '0x0',
 
   init: function() {
     return App.initWeb3();
   },
 
   initWeb3: function() {
+    
     if(typeof(web3) !== undefined){
       App.web3Provider = window.ethereum;
-    } else {
-      App.web3Provider = new Web3.providers.HttpProvider('http://localhost:7545');
+      web3 = new Web3(App.web3Provider);
+      web3.eth.getAccounts((err, res) => { App.account = res[0]; });
     }
-    web3 = new Web3(App.web3Provider);
-
     return App.initContract();
   },
 
@@ -26,26 +25,7 @@ App = {
       App.contracts.Election = TruffleContract(election);
       // Connect provider to interact with contract
       App.contracts.Election.setProvider(App.web3Provider);
-
-      App.listenForEvents();
-      return App.render();
-    });
-  },
-
-  // Listen for events emitted from the contract
-  listenForEvents: function() {
-    App.contracts.Election.deployed().then(function(instance) {
-      // Restart Chrome if you are unable to receive this event
-      // This is a known issue with Metamask
-      // https://github.com/MetaMask/metamask-extension/issues/2393
-      instance.votedEvent({}, {
-        fromBlock: 0,
-        toBlock: 'latest'
-      }).watch(function(error, event) {
-        console.log("event triggered", event)
-        // Reload when a new vote is recorded
-        App.render();
-      });
+      App.render();
     });
   },
 
@@ -57,6 +37,19 @@ App = {
 
     loader.show();
     content.hide();
+
+    const ethereumButton = document.querySelector('.enableEthereumButton');
+
+    ethereumButton.addEventListener('click', () => {
+      //Will Start the metamask extension
+      ethereum.request({ method: 'eth_requestAccounts' });
+    });
+
+    ethereum.on('accountsChanged', function (accounts) {
+      // Time to reload your interface with accounts[0]!
+      App.account = ethereum.selectedAddress;
+      window.location.reload();
+    });
 
     // Load contract data
     App.contracts.Election.deployed().then(function(instance) {
@@ -87,9 +80,12 @@ App = {
       return electionInstance.election_name();
     }).then(function(name){
       document.getElementById("electionName").innerHTML = name;
-      App.getAccountInfo();
       loader.hide();
-      content.show();  
+      content.show();
+      if(App.account !== undefined){
+        App.getAccountInfo();
+      }
+       
     }).catch(function(error) {
       console.warn(error);
     });
@@ -102,32 +98,28 @@ App = {
       App.contracts.Election.deployed().then(function(instance) {
         return instance.voters(App.account);
       }).then(function(voter){
-        if(voter[0] && voter[1]) {
-          $('#vote').hide();
+        //Resolve status
+        if(voter[0] && voter[1]){
+          App.accountStatus = "Already voted for " + voter[2];
           $('#authorize').hide();
-          App.accountStatus = "Already Voted";
+          $('#vote').hide();
         } else if(voter[0] && !voter[1]){
-          $('#vote').show();
+          App.accountStatus = "Ready to vote";
           $('#authorize').hide();
-          App.accountStatus = "Ready to Vote";
-        } else if(!voter[0]) {
-          $('#vote').hide();
+          $('#vote').show();
+        } else if(!voter[1] && !voter[1]){
+          App.accountStatus = "Needs verification";
           $('#authorize').show();
-          App.accountStatus = "Authorization needed";
+          $('#vote').hide();
         }
-        
-        web3.eth.getAccounts((error, accounts) => {
-          web3.eth.getBalance(accounts[0], (error, balance) => {
-            accountInfo.append("<li>Your account: " + accounts[0] + "</li>");
-            accountInfo.append("<li>Your balance: " + balance + "</li>");
-            accountInfo.append("<li>Status: " + App.accountStatus +"</li>");
-            App.account = accounts[0];
-            console.log(App.account);
-          });
+
+        //Retrieve account info
+        web3.eth.getBalance(App.account, (error, balance) => {
+          accountInfo.append("<li>Your account: " + App.account + "</li>");
+          accountInfo.append("<li>Your balance: " + web3.fromWei(balance, "ether") +" ETH" + "</li>");
+          accountInfo.append("<li>Status: " + App.accountStatus +"</li>");
         });
       });
-        
-      
     }
   },
 
@@ -136,10 +128,13 @@ App = {
       electionInstance = instance;
       return instance.owner();
     }).then(function(owner){
-      return electionInstance.authorize(App.account, { from: owner });
+      App.owner = owner;
+      console.log(App.account);
+      return electionInstance.authorize(App.account, {from: App.account});
     }).then(function(receipt){
       $("#content").hide();
       $("#loader").show();
+      window.location.reload();
     }).catch(function(err) {
       console.error(err);
     });
@@ -153,6 +148,7 @@ App = {
       // Wait for votes to update
       $("#content").hide();
       $("#loader").show();
+      window.location.reload();
     }).catch(function(err) {
       console.error(err);
     });
