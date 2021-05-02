@@ -21,11 +21,15 @@
     <div class="container" style="width: 650px;">
       <div class="row">
         <div class="col-lg-12">
-          <h1 id="electionName" class="text-center">Election Results</h1>
+          <h1 id="electionName" class="text-center">Election Mainpage</h1>
           <hr/>
           <br/>
           <div id="loader">
             <p class="text-center">Loading...</p>
+          </div>
+          <div id=enableEthereum style="text-align: center;">
+            <hr/>
+            <button class="enableEthereumButton">Enable Ethereum</button>
           </div>
           <div id="content" style="display: none;">
             <table class="table">
@@ -52,8 +56,6 @@
             <ul style="list-style-type: none;" id="accountInfo"></ul>
             <div id="authorize" class="text-center">
               <button style="margin-right: 10px;" class="btn btn-primary" onclick="App.authorize()">Get Verified</button>
-              <button class="enableEthereumButton">Enable Ethereum</button>
-              <hr/>
             </div>
           </div>
         </div>

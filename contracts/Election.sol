@@ -12,6 +12,7 @@ contract Election {
         add_candidate("Isabel Diaz Ayuso, PP");
         add_candidate("Angel Gabilondo Pujol, PSOE");
         add_candidate("Monica Garcia Perez, MM");
+        add_candidate("Rocio Monasterio San Martin, VOX");
         add_candidate("Pablo Iglesias Turrion, UP");
         add_candidate("Edmundo Bal Frances, CS");
         total_votes = 0;

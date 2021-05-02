@@ -14,5 +14,8 @@
   "license": "ISC",
   "devDependencies": {
     "lite-server": "^2.6.1"
+  },
+  "dependencies": {
+    "ganache-cli": "^6.12.2"
   }
 }
