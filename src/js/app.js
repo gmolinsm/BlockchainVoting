@@ -12,15 +12,24 @@ App = {
   },
 
   initWeb3: function() {
-    ethereum.on('accountsChanged', function (accounts) {
-      console.log("Accounts changed");
-      App.account = ethereum.selectedAddress;
-      window.location.reload();
-    });
 
-    nodeManager = new Web3(new Web3.providers.HttpProvider("http://127.0.0.1:8545"));
+    nodeManager = new Web3(new Web3.providers.HttpProvider("http://blockchainvoting.ddns.net:8545"));
+    /*nodeManager.eth.getAccounts((err, accounts) => {
+      for (var i = 0; i < accounts.length; i++) {
+        console.log(accounts[i]);
+        nodeManager.eth.getBalance(accounts[i], (err, balance) => {
+          console.log(nodeManager.fromWei(balance, "ether"));
+        });
+      }
+    })*/
 
     if(window.ethereum !== undefined){
+      ethereum.on('accountsChanged', function (accounts) {
+        console.log("Accounts changed");
+        App.account = ethereum.selectedAddress;
+        window.location.reload();
+      });
+      
       walletManager = new Web3(window.ethereum);
       walletManager.eth.getAccounts((err, res) => {
         App.account = res[0];
@@ -28,7 +37,7 @@ App = {
       });
     } else {
       App.loader.empty();
-      App.loader.append("<h4>Please install a valid Ethereum wallet. Metamask is available at: <a href='https://metamask.io/'>https://metamask.io/<a/></h4>");
+      App.loader.append("<h4 style='text-align: center;'>Please install a valid Ethereum wallet. Metamask is available at: <a href='https://metamask.io/'>https://metamask.io/<a/></h4>");
     }
   },
 
@@ -58,9 +67,8 @@ App = {
         } else {
           App.loader.empty();
           App.loader.append(
-            "<h4>This address does not belong to the network. \
-            Please connect from an authorized address or import your current address into the network. \
-            If your current account holds any currencies we advise you use a new one.</h4>\
+            "<h4 style='text-align: center;'>This address does not belong to the network. \
+            Please create a new account and import it to the network in order to vote.</h4>\
             <hr/>"
             + "<form id='import' onSubmit='App.importAccount(); return false;'>\
                 <div class='form-group' style='text-align: center;'>\
@@ -82,7 +90,7 @@ App = {
       $('#vote').hide();
       $('#enableEthereum').show();
       App.loader.empty();
-      App.loader.append("<h4>Make sure your account is connected.</h4>");
+      App.loader.append("<h4 style='text-align: center;'>Make sure your account is connected.</h4>");
     } 
   },
   
@@ -122,7 +130,7 @@ App = {
       console.warn(error);
       $('#enableEthereum').hide();
       App.loader.empty();
-      App.loader.append("<h4>Couldn't retrieve contract instance. Please make sure Metamask is running on the proper network.</h4>");
+      App.loader.append("<h4 style='text-align: center;'>Couldn't retrieve contract instance. Please make sure Metamask is running on the proper network.</h4>");
     });
   },
   
@@ -164,7 +172,6 @@ App = {
       return instance.owner();
     }).then(function(owner){
       App.owner = owner;
-      console.log(App.account);
       return electionInstance.authorize(App.account, {from: App.account});
     }).then(function(receipt){
       App.content.hide();
@@ -192,12 +199,25 @@ App = {
   importAccount: function() {
     var privateKey = $('#privateKey').val();
     var accountPass = $('#accountPass').val();
-
     nodeManager.personal.importRawKey("0x"+privateKey, accountPass, (err, account) => {
       if(err){
         alert("Invalid credentials");
       } else {
-        alert("Migration successful");
+        nodeManager.eth.getAccounts((err, accounts) => {
+          nodeManager.eth.sendTransaction({
+          from: accounts[0],
+          to: account, 
+          value: nodeManager.toWei(0.01, "ether"), 
+          }, function(err, transactionHash) {
+            if (err) { 
+              console.log(err); 
+            } else {
+              console.log(transactionHash);
+            }
+          });
+        });
+        
+        alert("Migration successful. A small amount of ether will be transferred");
         window.location.reload();
       }
     });
