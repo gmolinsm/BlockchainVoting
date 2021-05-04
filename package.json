@@ -1,8 +1,8 @@
 {
-  "name": "blockchain-voting",
+  "name": "my-webpack-project",
   "homepage": "https://gmolinsm.github.io/blockchain-voting/",
   "version": "1.0.0",
-  "description": "",
+  "description": "My webpack project",
   "main": "truffle.js",
   "directories": {
     "test": "test"
@@ -10,18 +10,40 @@
   "scripts": {
     "dev": "lite-server",
     "test": "react-scripts test",
-    "build": "react-scripts build",
-    "predeploy": "npm run build",
+    "build": "webpack --mode=production",
+    "predeploy": "webpack",
     "deploy": "gh-pages -d build",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "build:dev": "webpack --mode=development",
+    "build:prod": "webpack --mode=production",
+    "watch": "webpack --watch",
+    "serve": "webpack serve"
   },
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "lite-server": "^2.6.1"
+    "@babel/core": "^7.14.0",
+    "@babel/preset-env": "^7.14.1",
+    "@webpack-cli/generators": "^2.0.0",
+    "babel-loader": "^8.2.2",
+    "css-loader": "^5.2.4",
+    "gh-pages": "^3.1.0",
+    "html-webpack-plugin": "^5.3.1",
+    "lite-server": "^2.6.1",
+    "style-loader": "^2.0.0",
+    "webpack": "^5.36.2",
+    "webpack-cli": "^4.6.0",
+    "webpack-dev-server": "^3.11.2"
   },
   "dependencies": {
-    "gh-pages": "^3.1.0",
-    "react-scripts": "^4.0.3"
+    "react-scripts": "^4.0.3",
+    "truffle": "^5.3.4"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/gmolinsm/BlockchainVoting.git"
+  },
+  "bugs": {
+    "url": "https://github.com/gmolinsm/BlockchainVoting/issues"
   }
 }

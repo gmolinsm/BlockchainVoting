@@ -13,7 +13,7 @@ App = {
 
   initWeb3: function() {
 
-    nodeManager = new Web3(new Web3.providers.HttpProvider("https://blockchainvoting.ddns.net:8545"));
+    nodeManager = new Web3(new Web3.providers.HttpProvider("http://blockchainvoting.ddns.net:8545"));
     /*nodeManager.eth.getAccounts((err, accounts) => {
       for (var i = 0; i < accounts.length; i++) {
         console.log(accounts[i]);
