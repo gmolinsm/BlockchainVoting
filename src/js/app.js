@@ -25,7 +25,6 @@ App = {
 
     if(window.ethereum !== undefined){
       ethereum.on('accountsChanged', function (accounts) {
-        console.log("Accounts changed");
         App.account = ethereum.selectedAddress;
         window.location.reload();
       });
