@@ -10,7 +10,7 @@ module.exports = {
     },
     cloud: {
       host: "blockchainvoting.ddns.net",
-      port: 80,
+      port: 443,
       network_id: "*" // Match any network id
     },
     develop: {

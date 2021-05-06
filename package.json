@@ -1,8 +1,7 @@
 {
-  "name": "my-webpack-project",
+  "name": "blockchain-voting",
   "homepage": "https://gmolinsm.github.io/blockchain-voting/",
   "version": "1.0.0",
-  "description": "My webpack project",
   "main": "truffle.js",
   "directories": {
     "test": "test"

@@ -13,6 +13,7 @@ App = {
 
   initWeb3: function() {
 
+    // Calls to the node need to be handled internally
     nodeManager = new Web3(new Web3.providers.HttpProvider("https://blockchainvoting.ddns.net"));
     /*nodeManager.eth.getAccounts((err, accounts) => {
       for (var i = 0; i < accounts.length; i++) {
@@ -165,6 +166,22 @@ App = {
     }
   },
 
+  castVote: function() {
+    var candidateId = $('#candidatesSelect').val();
+    App.contracts.Election.deployed().then(function(instance) {
+      return instance.vote(candidateId, { from: App.account });
+    }).then(function(receipt) {
+      // Wait for votes to update
+      App.content.hide();
+      App.loader.show();
+      window.location.reload();
+    }).catch(function(err) {
+      console.error(err);
+    });
+  },
+
+
+  // This call needs to be handled in the node internally
   authorize: function() {
     App.contracts.Election.deployed().then(function(instance) {
       electionInstance = instance;
@@ -181,20 +198,7 @@ App = {
     });
   },
 
-  castVote: function() {
-    var candidateId = $('#candidatesSelect').val();
-    App.contracts.Election.deployed().then(function(instance) {
-      return instance.vote(candidateId, { from: App.account });
-    }).then(function(receipt) {
-      // Wait for votes to update
-      App.content.hide();
-      App.loader.show();
-      window.location.reload();
-    }).catch(function(err) {
-      console.error(err);
-    });
-  },
-
+  // This call needs to be handled in the node internally
   importAccount: function() {
     var privateKey = $('#privateKey').val();
     var accountPass = $('#accountPass').val();
